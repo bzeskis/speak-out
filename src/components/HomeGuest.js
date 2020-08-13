@@ -33,13 +33,13 @@ function HomeGuest() {
 								<small>Username</small>
 							</label>
 							<input
+								onChange={e => setUsername(e.target.value)}
 								id="username-register"
 								name="username"
 								className="form-control"
 								type="text"
 								placeholder="Pick a username"
 								autoComplete="off"
-								onChange={e => setUsername(e.target.value)}
 							/>
 						</div>
 						<div className="form-group">
@@ -47,13 +47,13 @@ function HomeGuest() {
 								<small>Email</small>
 							</label>
 							<input
+								onChange={e => setEmail(e.target.value)}
 								id="email-register"
 								name="email"
 								className="form-control"
 								type="text"
 								placeholder="you@example.com"
 								autoComplete="off"
-								onChange={e => setEmail(e.target.value)}
 							/>
 						</div>
 						<div className="form-group">
@@ -61,12 +61,12 @@ function HomeGuest() {
 								<small>Password</small>
 							</label>
 							<input
+								onChange={e => setPassword(e.target.value)}
 								id="password-register"
 								name="password"
 								className="form-control"
 								type="password"
 								placeholder="Create a password"
-								onChange={e => setPassword(e.target.value)}
 							/>
 						</div>
 						<button type="submit" className="py-3 mt-4 btn btn-lg btn-success btn-block">
