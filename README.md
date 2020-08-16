@@ -1,6 +1,7 @@
 # SpeakOut
 
 SpeakOut is a social media app for sharing your thoughts with the world. 
+See the app in action here: https://youthful-chandrasekhar-ee9dc0.netlify.app/
 
 ## Functionality
 
