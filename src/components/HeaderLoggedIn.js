@@ -3,19 +3,23 @@ import { Link } from 'react-router-dom';
 import DispatchContext from '../DispatchContext';
 import StateContext from '../StateContext';
 import ReactTooltip from 'react-tooltip';
+import { withRouter } from 'react-router-dom';
 
 function HeaderLoggedIn(props) {
 	const appDispatch = useContext(DispatchContext);
 	const appState = useContext(StateContext);
-
-	function handleLogout() {
+	const handleLogout = () => {
 		appDispatch({ type: 'logout' });
-	}
+		appDispatch({
+			type: 'flashMessage',
+			value: 'You have successfully logged out',
+		});
+		props.history.push('/');
+	};
 
-	function handleSearchIcon(e) {
-		e.preventDefault();
+	const handleSearchIcon = () => {
 		appDispatch({ type: 'openSearch' });
-	}
+	};
 
 	return (
 		<div className="flex-row my-3 my-md-0">
@@ -23,15 +27,25 @@ function HeaderLoggedIn(props) {
 				data-for="search"
 				data-tip="Search"
 				onClick={handleSearchIcon}
-				href="#"
 				className="text-white mr-2 header-search-icon"
 			>
 				<i className="fas fa-search"></i>
 			</button>
 			<ReactTooltip place="bottom" id="search" className="custom-tooltip" />{' '}
-			<span data-for="chat" data-tip="Chat" className="mr-2 header-chat-icon text-white">
+			<span
+				onClick={() => appDispatch({ type: 'toggleChat' })}
+				data-for="chat"
+				data-tip="Chat"
+				className={'mr-2 header-chat-icon ' + (appState.unreadChatCount ? 'text-danger' : 'text-white')}
+			>
 				<i className="fas fa-comment"></i>
-				<span className="chat-count-badge text-white"> </span>
+				{appState.unreadChatCount ? (
+					<span className="chat-count-badge text-white">
+						{appState.unreadChatCount < 10 ? appState.unreadChatCount : '9+'}
+					</span>
+				) : (
+					''
+				)}
 			</span>
 			<ReactTooltip place="bottom" id="chat" className="custom-tooltip" />{' '}
 			<Link data-for="profile" data-tip="My Profile" to={`/profile/${appState.user.username}`} className="mr-2">
@@ -48,4 +62,4 @@ function HeaderLoggedIn(props) {
 	);
 }
 
-export default HeaderLoggedIn;
+export default withRouter(HeaderLoggedIn);

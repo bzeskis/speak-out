@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import LoadingDotsIcon from './LoadingDotsIcon';
+import Post from './Post';
 
 function ProfilePosts() {
 	const { username } = useParams();
@@ -10,8 +11,7 @@ function ProfilePosts() {
 
 	useEffect(() => {
 		const ourRequest = Axios.CancelToken.source();
-
-		async function fetchPosts() {
+		const fetchPosts = async () => {
 			try {
 				const response = await Axios.get(`/profile/${username}/posts`, { cancelToken: ourRequest.token });
 				setPosts(response.data);
@@ -19,27 +19,24 @@ function ProfilePosts() {
 			} catch (e) {
 				console.log('There was a problem.');
 			}
-		}
+		};
 		fetchPosts();
 		return () => {
 			ourRequest.cancel();
 		};
-	}, []);
+	}, [username]);
 
-	if (isLoading) return <LoadingDotsIcon />;
-
+	if (isLoading)
+		return (
+			<div className="">
+				{' '}
+				<LoadingDotsIcon />
+			</div>
+		);
 	return (
 		<div className="list-group">
 			{posts.map(post => {
-				const date = new Date(post.createdDate);
-				const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-				return (
-					<Link key={post._id} to={`/post/${post._id}`} className="list-group-item list-group-item-action">
-						<img className="avatar-tiny" src={post.author.avatar} alt="avatar" /> <strong>{post.title}</strong>{' '}
-						<span className="text-muted small">on {dateFormatted} </span>
-					</Link>
-				);
+				return <Post post={post} key={post._id} />;
 			})}
 		</div>
 	);

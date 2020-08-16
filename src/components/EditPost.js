@@ -30,7 +30,7 @@ function EditPost(props) {
 		notFound: false,
 	};
 
-	function ourReducer(draft, action) {
+	const ourReducer = (draft, action) => {
 		switch (action.type) {
 			case 'fetchComplete':
 				draft.title.value = action.value.title;
@@ -78,7 +78,7 @@ function EditPost(props) {
 
 	const [state, dispatch] = useImmerReducer(ourReducer, originalState);
 
-	function submitHandler(e) {
+	const submitHandler = (e) => {
 		e.preventDefault();
 		dispatch({ type: 'titleRules', value: state.title.value });
 		dispatch({ type: 'bodyRules', value: state.body.value });
@@ -87,7 +87,7 @@ function EditPost(props) {
 
 	useEffect(() => {
 		const ourRequest = Axios.CancelToken.source();
-		async function fetchPost() {
+		const fetchPost = async () => {
 			try {
 				const response = await Axios.get(`/post/${state.id}`, { cancelToken: ourRequest.token });
 				if (response.data) {
@@ -114,16 +114,17 @@ function EditPost(props) {
 		if (state.sendCount) {
 			dispatch({ type: 'saveRequestStarted' });
 			const ourRequest = Axios.CancelToken.source();
-			async function fetchPost() {
+			const fetchPost = async () => {
 				try {
-					const response = await Axios.post(
+					await Axios.post(
 						`/post/${state.id}/edit`,
 						{ title: state.title.value, body: state.body.value, token: appState.user.token },
 						{ cancelToken: ourRequest.token }
 					);
 					dispatch({ type: 'saveRequestFinished' });
 					appDispatch({ type: 'flashMessage', value: 'Post was updated.' });
-				} catch (e) {
+					props.history.push(`/post/${state.id}`);
+				} catch (error) {
 					console.log('There was a problem or the request was cancelled.');
 				}
 			}
@@ -135,7 +136,7 @@ function EditPost(props) {
 	}, [state.sendCount]);
 
 	if (state.notFound) {
-		return <NotFound />;
+		return <NotFound title="Page not found" />;
 	}
 
 	if (state.isFetching)
@@ -150,7 +151,6 @@ function EditPost(props) {
 			<Link className="small font-weight-bold" to={`/post/${state.id}`}>
 				&laquo; Back to post permalink
 			</Link>
-
 			<form className="mt-3" onSubmit={submitHandler}>
 				<div className="form-group">
 					<label htmlFor="post-title" className="text-muted mb-1">
@@ -192,7 +192,7 @@ function EditPost(props) {
 				</div>
 
 				<button className="btn btn-primary" disabled={state.isSaving}>
-					Save Updates
+					{state.isSaving ? 'Saving...' : 'Update Post'}
 				</button>
 			</form>
 		</Page>

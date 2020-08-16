@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import DispatchContext from '../DispatchContext';
 import { useImmer } from 'use-immer';
 import Axios from 'axios';
-import { Link } from 'react-router-dom';
+import Post from './Post';
 
 function Search() {
 	const appDispatch = useContext(DispatchContext);
@@ -33,7 +33,7 @@ function Search() {
 			return () => clearTimeout(delay);
 		} else {
 			setState(draft => {
-				draft.show = 'neither';
+				draft.show = 'none';
 			});
 		}
 	}, [state.searchTerm]);
@@ -41,7 +41,7 @@ function Search() {
 	useEffect(() => {
 		if (state.requestCount) {
 			const ourRequest = Axios.CancelToken.source();
-			async function fetchResults() {
+			const fetchResults = async () => {
 				try {
 					const response = await Axios.post(
 						'/search',
@@ -55,27 +55,27 @@ function Search() {
 				} catch (e) {
 					console.log('There was a problem or the request was cancelled.');
 				}
-			}
+			};
 			fetchResults();
 			return () => ourRequest.cancel();
 		}
 	}, [state.requestCount]);
 
-	function searchKeyPressHandler(e) {
-		if (e.keyCode == 27) {
+	const searchKeyPressHandler = e => {
+		if (e.keyCode === 27) {
 			appDispatch({ type: 'closeSearch' });
 		}
-	}
+	};
 
-	function handleInput(e) {
+	const handleInput = e => {
 		const value = e.target.value;
 		setState(draft => {
 			draft.searchTerm = value;
 		});
-	}
+	};
 
 	return (
-		<div className="search-overlay">
+		<>
 			<div className="search-overlay-top shadow-sm">
 				<div className="container container--narrow">
 					<label htmlFor="live-search-field" className="search-overlay-icon">
@@ -107,23 +107,7 @@ function Search() {
 									found)
 								</div>
 								{state.results.map(post => {
-									const date = new Date(post.createdDate);
-									const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-									return (
-										<Link
-											onClick={() => appDispatch({ type: 'closeSearch' })}
-											key={post._id}
-											to={`/post/${post._id}`}
-											className="list-group-item list-group-item-action"
-										>
-											<img className="avatar-tiny" src={post.author.avatar} alt="avatar" />{' '}
-											<strong>{post.title}</strong>{' '}
-											<span className="text-muted small">
-												by {post.author.username} on {dateFormatted}{' '}
-											</span>
-										</Link>
-									);
+									return <Post key={post._id} post={post} onClick={() => appDispatch({ type: 'closeSearch' })} />;
 								})}
 							</div>
 						)}
@@ -135,7 +119,7 @@ function Search() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 

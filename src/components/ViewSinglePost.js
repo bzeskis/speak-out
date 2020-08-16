@@ -19,7 +19,7 @@ function ViewSinglePost(props) {
 	useEffect(() => {
 		const ourRequest = Axios.CancelToken.source();
 
-		async function fetchPost() {
+		const fetchPost = async () => {
 			try {
 				const response = await Axios.get(`/post/${id}`, { cancelToken: ourRequest.token });
 				setPost(response.data);
@@ -27,7 +27,7 @@ function ViewSinglePost(props) {
 			} catch (e) {
 				console.log('There was a problem or the request was cancelled.');
 			}
-		}
+		};
 		fetchPost();
 		return () => {
 			ourRequest.cancel();
@@ -48,30 +48,27 @@ function ViewSinglePost(props) {
 	const date = new Date(post.createdDate);
 	const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-	function isOwner() {
+	const isOwner = () => {
 		if (appState.loggedIn) {
 			return appState.user.username === post.author.username;
 		}
 		return false;
-	}
+	};
 
-	async function deleteHandler() {
+	const deleteHandler = async () => {
 		const areYouSure = window.confirm('Do you really want to delete this post?');
 		if (areYouSure) {
 			try {
 				const response = await Axios.delete(`/post/${id}`, { data: { token: appState.user.token } });
 				if (response.data === 'Success') {
-					// 1. display a flash message
 					appDispatch({ type: 'flashMessage', value: 'Post was successfully deleted.' });
-
-					// 2. redirect back to the current user's profile
 					props.history.push(`/profile/${appState.user.username}`);
 				}
 			} catch (e) {
 				console.log('There was a problem.');
 			}
 		}
-	}
+	};
 
 	return (
 		<Page title={post.title}>

@@ -4,8 +4,9 @@ import HeaderLoggedOut from './HeaderLoggedOut';
 import HeaderLoggedIn from './HeaderLoggedIn';
 import StateContext from '../StateContext';
 
-const Header = () => {
+const Header = props => {
 	const appState = useContext(StateContext);
+	const headerContent = appState.loggedIn ? <HeaderLoggedIn /> : <HeaderLoggedOut />;
 	return (
 		<header className="linear-blue mb-3">
 			<div className="container d-flex flex-column flex-md-row align-items-center p-3">
@@ -14,7 +15,7 @@ const Header = () => {
 						SpeakOut
 					</Link>
 				</h4>
-				{appState.loggedIn ? <HeaderLoggedIn /> : <HeaderLoggedOut />}
+				{!props.staticEmpty ? headerContent : ''}
 			</div>
 		</header>
 	);
